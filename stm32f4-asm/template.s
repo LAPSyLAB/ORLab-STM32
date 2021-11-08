@@ -62,8 +62,8 @@ _start:
 	// Make GPIOD Pin12 as output pin (bits 25:24 in MODER register)
 	ldr r6, = GPIOD_MODER       // Load GPIOD MODER register address to r6
 	ldr r5, [r6]                // Read its content to r5
-	and r5, #0xFCFFFFFF          // Clear bits 24, 25 for P12
-	orr r5, #0x01000000          // Write 01 to bits 24, 25 for P12
+	bic r5, #0x3000000          // Clear bits 24, 25 for P12
+	orr r5, #0x01000000         // Write 01 to bits 24, 25 for P12
 	str r5, [r6]                // Store result in GPIOD MODER register
 
 	// Set GPIOD Pin12 to 1 (bit 12 in ODR register)
@@ -75,7 +75,7 @@ _start:
 	// Set GPIOD Pin12 to 0 (bit 12 in ODR register)
 	ldr r6, = GPIOD_ODR         // Load GPIOD output data register
 	ldr r5, [r6]                // Read its content to r5
-	and r5, #0xFFFFEFFF          // write 0 to pin 12
+	bic r5, #0x1000             // write 0 to pin 12
 	str r5, [r6]                // Store result in GPIOD output data register
 
 loop:
