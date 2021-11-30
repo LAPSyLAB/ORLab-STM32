@@ -50,15 +50,6 @@
 // .equ     GPIOD_ODR,     0x40020C14 // GPIOD output data register (page 283)
 // .equ     GPIOD_BSSR,    0x40020C18 // GPIOD port set/reset register (page 284)
 
-// SysTick Timer definitions
-.equ     SCS, 			0xe000e000
-.equ     SCS_SYST_CSR,	0x10	// Control/Status register
-.equ     SCS_SYST_RVR,	0x14	// Value to countdown from
-.equ     SCS_SYST_CVR,	0x18	// Current value
-
-.equ	 SYSTICK_RELOAD_1MS,	15999  //1 msec at 16MHz ...  16 000 000 / 500 - 1
-
-
 // Values for BSSR register - pin 12
 .equ     LEDs_ON,       0x0000F000
 .equ     LEDs_OFF,   	0xF0000000
@@ -80,33 +71,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 _start:
-    bl 	INIT_IO
-    bl	INIT_TC
+    bl INIT_IO
 
 loop:
 	bl LED_ON
 	mov r0, 500
-	bl DELAYTC
+	bl DELAY
 	bl LED_OFF
 	mov r0, 500
-	bl DELAYTC
+	bl DELAY
 	b loop                      // Jump to loop
-
-INIT_TC:
-  push {r0, r1, lr}
-	ldr r1, =SCS
-
-	ldr r0, =SYSTICK_RELOAD_1MS
-	str r0, [r1, #SCS_SYST_RVR]
-
-	ldr r0, =0
-	str r0, [r1, #SCS_SYST_CVR]
-
-	ldr r0, =5
-	str r0, [r1, #SCS_SYST_CSR]
-
-  pop {r0, r1, pc}
-
 
 INIT_IO:
   push {r5, r6, lr}
@@ -142,19 +116,6 @@ LED_OFF:
 	str    r5, [r6,#GPIOD_BSSR] // Write to BSRR register
   	pop {r5, r6, pc}
 
-
-DELAYTC:
-    push {r1, r2, lr}
-    ldr r1, =SCS
-
-
-LOOPTC:	ldr r2, [r1, #SCS_SYST_CSR]
-		tst r2, #0x10000
-		beq LOOPTC
-
-      subs r0, r0, 1
-      bne LOOPTC
-    pop {r1, r2, pc}
 
 DELAY:
     push {r1, lr}
