@@ -4,7 +4,9 @@
 //
 // Turns on an LED attached to GPIOD Pin 12
 // We need to enable the clock for GPIOD and set up pin 12 as output.
-
+// 
+// We also measure delay by using SysTick Timer, coresponding code is included
+//
 // Start with enabling thumb 32 mode since Cortex-M4 do not work with arm mode
 // Unified syntax is used to enable good of the both words...
 
