@@ -118,7 +118,7 @@ NIZ1:	.ascii "Testni Niz!!"
 
 @ -- Zero initialized data ---
 .section .bss
-NIZ2:	.space 12
+NIZ2:	.space STRING_LENGTH
 
 // Start of text section
 .section .text
@@ -144,6 +144,16 @@ zanka:
 //    mov r0,#'a'
 //    bl	SEND_UART
 
+// Erase NIZ2
+    ldr r0, =NIZ2
+    mov r1,#STRING_LENGTH
+    mov r2,#0
+brisi: strb	r2,[r0]
+	add r0,r0,#1
+	subs r1,r1,#1
+	bne brisi
+
+
 /* sproži sprejemanje preko DMA */
     ldr r0, =NIZ2
     ldr r1, =STRING_LENGTH
@@ -155,11 +165,26 @@ zanka:
     bl SND_DMA
 
 // Wait for the end of transmission
-    ldr r6, =USART2_BASE
+/*    ldr r6, =USART2_BASE
 WAIT_TC:
     ldr r5, [r6, #USART2_SR]
     tst r5, #(1 << 6)
-    beq WAIT_TC
+    beq WAIT_TC*/
+
+    ldr r6, =DMA1_BASE
+WAIT_TCIF6:
+    ldr r5, [r6, #DMA_HISR]
+    tst r5, #(1 << 21)
+    beq WAIT_TCIF6
+// clear reception flag
+	mov r5, #(1 << 21)
+	str	r5,[r6, #DMA_HIFCR]
+// clear DMAT flag - seems not necessary
+/*    ldr r6, =USART2_BASE
+    ldr r5, [r6, #USART2_CR3]
+	bic r5, #(1<<7)          	// Set bit 7 to disable DMAT bit
+	str r5, [r6,#USART2_CR3]    // Store result
+*/
 
     bl LED_OFF
 
@@ -167,26 +192,23 @@ WAIT_TC:
 	bl 	DELAYTC
 
 //    bl	RECV_UART
-/* pocakaj na zastavico ENDRX
-z1: ldr r1, [r0, #DBGU_SR]
-    tst r1, #1 << 3
-    beq z1*/
+/* pocakaj na zastavico ENDRX*/
 
 // Wait for the end of reception
     ldr r6, =DMA1_BASE
-WAIT_TCIF:
+WAIT_TCIF5:
     ldr r5, [r6, #DMA_HISR]
     tst r5, #(1 << 11)
-    beq WAIT_TCIF
+    beq WAIT_TCIF5
 // clear reception flag
 	mov r5, #(1 << 11)
 	str	r5,[r6, #DMA_HIFCR]
-// clear DMAR flag
-    ldr r6, =USART2_BASE
+// clear DMAR flag - seems not necessary
+/*    ldr r6, =USART2_BASE
     ldr r5, [r6, #USART2_CR3]
 	bic r5, #(1<<6)          	// Set bit 6 to disable DMAR bit
 	str r5, [r6,#USART2_CR3]    // Store result
-
+*/
 
 	bl LED_ON
 
@@ -202,6 +224,21 @@ INIT_DMA:
 	ldr r5, [r6,#RCC_AHB1ENR]   // Read its content to r5
 	orr r5, #(1<<21)          	// Set bit 21 to enable DMA1 clock
 	str r5, [r6,#RCC_AHB1ENR]   // Store result in peripheral clock register
+
+	// Enable DMA Reception for USART2
+    ldr r6, =USART2_BASE
+    ldr r5, [r6, #USART2_CR3]
+	orr r5, #(1<<6)          	// Set bit 6 to enable DMAR bit
+	str r5, [r6,#USART2_CR3]    // Store result
+
+	// Enable DMA Transmission for USART2
+    ldr r6, =USART2_BASE
+    ldr r5, [r6, #USART2_CR3]
+	orr r5, #(1<<7)          	// Set bit 7 to enable DMAT bit
+	str r5, [r6,#USART2_CR3]    // Store result
+
+
+
   pop {r5, r6, pc}
 
 RCV_DMA:
@@ -222,12 +259,6 @@ WAIT_EN:							// Wait EN bit to become zero
       ldr r5, [r6, #DMA_SxCR_RX]
       tst r5, #1
       bne WAIT_EN
-
-// Enable DMA Reception for USART2
-    ldr r6, =USART2_BASE
-    ldr r5, [r6, #USART2_CR3]
-	orr r5, #(1<<6)          	// Set bit 6 to enable DMAR bit
-	str r5, [r6,#USART2_CR3]    // Store result
 
 	ldr r6, =DMA1_BASE          	// Load reg base address to r6
 //  Transmit (TX) DMA Init
@@ -267,12 +298,6 @@ WAIT_EN1:							// Wait EN bit to become zero
       ldr r5, [r6, #DMA_SxCR_TX]
       tst r5, #1
       bne WAIT_EN1
-
-// Enable DMA Transmission for USART2
-    ldr r6, =USART2_BASE
-    ldr r5, [r6, #USART2_CR3]
-	orr r5, #(1<<7)          	// Set bit 7 to enable DMAT bit
-	str r5, [r6,#USART2_CR3]    // Store result
 
 	ldr r6, =DMA1_BASE          	// Load reg base address to r6
 //  Transmit (TX) DMA Init
