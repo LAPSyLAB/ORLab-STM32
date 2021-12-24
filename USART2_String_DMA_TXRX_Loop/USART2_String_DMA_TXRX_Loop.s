@@ -261,7 +261,7 @@ WAIT_EN:							// Wait EN bit to become zero
       bne WAIT_EN
 
 	ldr r6, =DMA1_BASE          	// Load reg base address to r6
-//  Transmit (TX) DMA Init
+//  Receive (RX) DMA Init
 	ldr r5, =USART2_BASE+USART2_DR	// RX peripheral address to r5
 	str r5, [r6,#DMA_SxPAR_RX]   	// Store result in peripheral DMA pointerclock register
 	str r0, [r6,#DMA_SxM0AR_RX]   	// Store address pointerr
