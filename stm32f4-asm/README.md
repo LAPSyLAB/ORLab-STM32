@@ -1,6 +1,8 @@
 # stm32f4-assembly
 
-Assembly template for STM32F4 family of products using Cortex-M4 that turns on an LED connected to GPIO pin 12.
+Assembly template for STM32F4 family of products using Cortex-M4 that blinks all 4 LEDS on board.
+Better organized and simplified.
+
 
 Note that
 
