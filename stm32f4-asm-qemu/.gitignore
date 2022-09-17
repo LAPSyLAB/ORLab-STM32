@@ -1,12 +1,12 @@
 .vscode
 *.o
-*.bin
-*.elf
+# *.bin
+# *.elf
 *.hex
 *.lst
 *.map
 .settings/
 Debug/
 Release/
-.metadata
+# .metadata
 # *.launch
