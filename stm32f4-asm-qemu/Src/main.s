@@ -27,6 +27,7 @@
 
 // Constants
 .equ     LEDDELAY,      4000
+// For LOOPTC Software delay
 // By default 16MHz internal HSI clock is enabled
 // Internal loop takes 4 cycles
 
@@ -41,16 +42,11 @@
 // GPIOD base address is 0x40020C00
 .equ     GPIOD_BASE,   0x40020C00 // GPIOD base address)
 //   MODER register offset is 0x00
-.equ     GPIOD_MODER,   0x00 // GPIOD port mode register (page 281)
+.equ     GPIOx_MODER,   0x00 // GPIOD port mode register (page 281)
 //   ODR   register offset is 0x14
-.equ     GPIOD_ODR,     0x14 // GPIOD output data register (page 283)
+.equ     GPIOx_ODR,     0x14 // GPIOD output data register (page 283)
 //   BSSR   register offset is 0x18
-.equ     GPIOD_BSSR,     0x18 // GPIOD port set/reset register (page 284)
-
-//Absolute addresses
-// .equ     GPIOD_MODER,   0x40020C00 // GPIOD port mode register (page 281)
-// .equ     GPIOD_ODR,     0x40020C14 // GPIOD output data register (page 283)
-// .equ     GPIOD_BSSR,    0x40020C18 // GPIOD port set/reset register (page 284)
+.equ     GPIOx_BSSR,     0x18 // GPIOD port set/reset register (page 284)
 
 // SysTick Timer definitions
 .equ     SCS, 			0xe000e000
@@ -58,10 +54,10 @@
 .equ     SCS_SYST_RVR,	0x14	// Value to countdown from
 .equ     SCS_SYST_CVR,	0x18	// Current value
 
-.equ	 SYSTICK_RELOAD_1MS,	15999  //1 msec at 16MHz ...  16 000 000 / 500 - 1
+.equ	 SYSTICK_RELOAD_1MS,	15999  //1 msec at 16MHz ...
 
 
-// Values for BSSR register - pin 12
+// Values for BSSR register - pins 12-15
 .equ     LEDs_ON,       0x0000F000
 .equ     LEDs_OFF,   	0xF0000000
 
@@ -143,7 +139,7 @@ LOFF: mov r5, #LEDs_ON
 CONT:
 	// Set GPIOD Pins through BSSR register
 	ldr    r6, =GPIOD_BASE       // Load GPIOD BASE address to r6
-	str    r5, [r6,#GPIOD_BSSR] // Write to BSRR register
+	str    r5, [r6,#GPIOx_BSSR] // Write to BSRR register
 RET: pop {r3, r4, r5, r6, pc}
 //    bx	lr
 
@@ -176,7 +172,7 @@ INIT_IO:
 
 	// Make GPIOD Pin12 as output pin (bits 25:24 in MODER register)
 	ldr r6, =GPIOD_BASE       // Load GPIOD BASE address to r6
-	ldr r5, [r6,#GPIOD_MODER]  // Read GPIOD_MODER content to r5
+	ldr r5, [r6,#GPIOx_MODER]  // Read GPIOD_MODER content to r5
 	and r5, 0x00FFFFFF          // Clear bits 31-24 for P12-15
 	orr r5, 0x55000000          // Write 01 to bits 31-24 for P12-15
 	str r5, [r6]                // Store result in GPIOD MODER register
@@ -189,7 +185,7 @@ LED_ON:
 	// Set GPIOD Pins to 1 (through BSSR register)
 	ldr    r6, =GPIOD_BASE       // Load GPIOD BASE address to r6
 	mov    r5, #LEDs_ON
-	str    r5, [r6,#GPIOD_BSSR] // Write to BSRR register
+	str    r5, [r6,#GPIOx_BSSR] // Write to BSRR register
   	pop {r5, r6, pc}
 
 LED_OFF:
@@ -197,7 +193,7 @@ LED_OFF:
 	// Set GPIOD Pins to 0 (through BSSR register)
 	ldr    r6, =GPIOD_BASE       // Load GPIOD BASE address to r6
 	mov    r5, #LEDs_OFF
-	str    r5, [r6,#GPIOD_BSSR] // Write to BSRR register
+	str    r5, [r6,#GPIOx_BSSR] // Write to BSRR register
   	pop {r5, r6, pc}
 
 
