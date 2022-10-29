@@ -13,10 +13,14 @@
 // Make sure to run arm-none-eabi-objdump.exe -d prj1.elf to check if
 // the assembler used proper instructions. (Like ADDS)
 
-.thumb
-.syntax unified
-.cpu cortex-m4
+//.thumb
+//.syntax unified
+//.cpu cortex-m4
 
+  .syntax unified
+  .cpu cortex-m4
+  .fpu softvfp
+  .thumb
 //.arch armv7e-m
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -54,7 +58,7 @@
 .equ     SCS_SYST_RVR,	0x14	// Value to countdown from
 .equ     SCS_SYST_CVR,	0x18	// Current value
 
-.equ	 SYSTICK_RELOAD_1MS,	15999  //1 msec at 16MHz ...
+.equ	 SYSTICK_RELOAD_1MS,	15999  //1 msec at 16MHz ...  16 000 000 / 500 - 1
 
 
 // Values for BSSR register - pins 12-15
@@ -107,7 +111,9 @@ INIT_TC_PSP:
 
 
 .global SysTick_Handler
+.section  .text.SysTick_Handler,"ax",%progbits
 .type  SysTick_Handler, %function
+
 SysTick_Handler:
     push {r3, r4, r5, r6, lr}
 
@@ -129,6 +135,7 @@ SysTick_Handler:
     mov r7,#0
 
 	b CONT
+  .size  SysTick_Handler, .-SysTick_Handler
 
 LOFF: mov r5, #LEDs_ON
 //      mov r4,#0xff
