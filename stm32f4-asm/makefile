@@ -4,16 +4,14 @@ else
 	TARGET=./out/Main
 endif
 
-# SRCS = $(wildcard Core/**/*.s) \
-
-# OBJS = $(srcs:.s=.o) 
-
-#SRCS = ./Core/Src/Main.s ./Core/Startup/startup_stm32f407vgtx.s
-#OBJS =  $(addsuffix .o, $(basename $(SRCS)))
 
 srcs = $(wildcard Core/**/*.s) \
 
 OBJS = $(srcs:.s=.o) 
+
+#SRCS = ./Core/Src/Main.s ./Core/Startup/startup_stm32f407vgtx.s
+#OBJS =  $(addsuffix .o, $(basename $(SRCS)))
+
 
 INCLUDES = -I.
 
