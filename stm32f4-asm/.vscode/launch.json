@@ -1,0 +1,51 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug board",
+      "cwd": "${workspaceRoot}",
+      "executable": "./out/main.elf",
+      "request": "launch",
+      "type": "cortex-debug",
+      "servertype": "stlink",
+      "device": "STM32f407G",
+      "svdFile": "./STM32F407.svd",
+      "showDevDebugOutput": true,
+      "preLaunchTask": "Build"
+    },
+    {
+      "name": "Debug simulator",
+      "cwd": "${workspaceRoot}",
+      "executable": "./out/main.elf",
+      "request": "launch",
+      "type": "cortex-debug",
+      "servertype": "qemu",
+      "serverpath": "qemu-system-gnuarmeclipse",
+      "cpu": "cortex-m4",
+      "machine": "STM32F4-Discovery",
+      "device": "STM32f407G",
+      "svdFile": "./STM32F407.svd",
+      "showDevDebugOutput": true,
+      "preLaunchTask": "Build"
+    },
+    {
+      "name": "Debug simulator windows",
+      "cwd": "${workspaceRoot}",
+      "executable": "./out/main.elf",
+      "request": "launch",
+      "type": "cortex-debug",
+      "servertype": "qemu",
+      "serverpath": "D:\\RAVINOR\\Apps\\xPack\\xpack-qemu-arm-7.1.0-1\\bin\\qemu-system-gnuarmeclipse.exe",
+      "gdbPath": "D:\\RAVINOR\\Apps\\xPack\\xpack-arm-none-eabi-gcc-11.3.1-1.1\\bin\\arm-none-eabi-gdb.exe",
+      "cpu": "cortex-m4",
+      "machine": "STM32F4-Discovery",
+      "device": "STM32f407G",
+      "svdFile": "./STM32F407.svd",
+      "showDevDebugOutput": true,
+      "preLaunchTask": "Build"
+    },
+  ]
+}
